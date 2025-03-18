@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block title %}Flow PO-SO{% endblock %}
+{% block content %}
+{% load static %}
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* General reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f6f9;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            max-width: 800px;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        td {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Row hover effect */
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* No data row */
+        .no-data {
+            text-align: center;
+            font-style: italic;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <h1>Data Table from Database</h1>
+    <form method="get" class="bg-white p-4 rounded-lg shadow mb-6">
+        <div class="grid grid-cols-4 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Customer</label>
+                <select name="customer" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    <option value="ALL">ALL</option>
+                    {% for row in datacus %}
+                        <option value="{{ row.description }}">{{ row.description }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Date</label>
+                <input type="date" name="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" id="dateInput">
+                <script>
+                    // Set today's date when the page loads
+                    document.getElementById('dateInput').valueAsDate = new Date();
+                </script>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Dist. Channel</label>
+                <select name="dist_channel" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    <option value="ALL">ALL</option>
+                    <option value="DA">DA</option>
+                    <option value="DC">DC</option>
+                    <option value="DR">DR</option>
+                </select>
+            </div>
+            <div>
+                    <label for="search_term">Search:</label>
+                    <input type="text" name="search_term" id="search_term" value="{{ search_term }}">
+                </div>        
+            <div class="flex items-end">
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md">Apply</button>
+            </div>
+        </div>
+    </form>
+    <!-- Data Table -->
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Customer</th>
+                <th>Source</th>
+                <th>Name</th>
+                <th>Filedate</th>
+                <th>Download Name</th>
+                <th>Download Date</th>
+                <th>OCR Name</th>
+                <th>OCR Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+                <tr>
+                    <td>{{ row.username }}</td>
+                    <td>{{ row.fullname }}</td>
+                    <td>{{ row.OTORISASI }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" class="no-data">No data available</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+{% endblock %}

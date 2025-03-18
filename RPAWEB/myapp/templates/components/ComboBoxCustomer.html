@@ -1,0 +1,10 @@
+<div class="input-group mb-3">
+    {% comment %} <label class="input-group-text" for="cmb_Customer">Customer</label> {% endcomment %}
+    <span class="input-group-text customwidth" >Customer</span>
+    <select class="form-select" id="cmb_Customer" name="cmb_Customer" data-selected-customer="{{ selected_customer }}">
+        <option value="ALL" >ALL</option>
+    {% for row in data %}
+        <option value="{{ row.description }}">{{ row.description }}</option>
+    {% endfor %}
+</select>
+</div>

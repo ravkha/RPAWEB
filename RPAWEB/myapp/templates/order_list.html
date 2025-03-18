@@ -1,0 +1,105 @@
+<!-- templates/orders/order_list.html -->
+{% extends 'base.html' %}
+{% block title %}Flow PO-SO{% endblock %}
+{% block content %}
+{% load static %}
+<head>
+    <title>Order Tracking</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+
+    <div class="text-2xl font-bold mb-4">Flow Po-SO</div>
+    <div class="container mx-auto">
+        <!-- Filters -->
+        <form method="get" class="bg-white p-4 rounded-lg shadow mb-6">
+            <div class="grid grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Customer</label>
+                    <select name="customer" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                        <option value="ALL">ALL</option>
+                        {% for customer in customers %}
+                            <option value="{{ customer }}">{{ customer }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date</label>
+                    <input type="date" name="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Dist. Channel</label>
+                    <select name="dist_channel" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                        <option value="ALL">ALL</option>
+                        <option value="DA">DA</option>
+                        <option value="DC">DC</option>
+                        <option value="DR">DR</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md">Apply</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Statistics -->
+        <div class="grid grid-cols-5 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-lg shadow text-center">
+                <div class="text-xl font-bold">{{ source_count }}</div>
+                <div class="text-gray-600">Source</div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow text-center">
+                <div class="text-xl font-bold">{{ download_count }}</div>
+                <div class="text-gray-600">Download</div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow text-center">
+                <div class="text-xl font-bold">{{ ocr_count }}</div>
+                <div class="text-gray-600">OCR</div>
+            </div>
+            <!-- Add other stat boxes as needed -->
+        </div>
+
+        <!-- Orders Table -->
+        <div class="bg-white rounded-lg shadow overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PO Number</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PO Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dist. Chan</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SO Number</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SO Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Price</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SAP Info</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jadwal Toko</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for order in orders %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ forloop.counter }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ order.customer }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ order.source }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ order.file_date|date:"d/m/Y H:i:s" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ order.po_number }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ order.po_date|date:"d/m/Y H:i:s" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ order.dist_channel }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ order.so_number }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ order.so_date|date:"d/m/Y H:i:s" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right">{{ order.total_price|floatformat:2 }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ order.sap_info }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ order.jadwal_toko }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ order.notes }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+{% endblock %}

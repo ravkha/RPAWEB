@@ -1,0 +1,72 @@
+.customwidth {
+    width: 120px;
+}
+
+.placeholderSearch::placeholder {
+    font-style: italic;
+  }
+
+.metric-card {
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.metric-label {
+    color: #6c757d;
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.column-download {
+    display: table-cell;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    background: white;
+    font-size: 13px;
+}
+
+thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #80C4E9;
+}
+
+th {
+    background: #f5f5f5;
+}
+
+.table-responsive {
+    position: relative;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.apply-container {
+  padding: 5px 0 !important; /* Mengurangi padding di sekitarnya */
+}
+
+.checkbox-height {
+  padding: 0px 0 !important; /* Mengurangi padding di sekitarnya */
+}
+
+.apply-btn {
+  padding: 0x 10px; /* Mengurangi padding vertikal */
+  font-size: 15px; /* Mengecilkan ukuran teks */    
+  line-height: 1; /* Menyesuaikan tinggi teks */
+}

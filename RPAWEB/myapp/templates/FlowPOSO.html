@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Flow PO-SO{% endblock %}
+{% block content %}
+
+<script src="{% static 'js/FlowPOSO.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/FlowPOSO.css' %}">
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+<!-- Main Container -->
+<div class="container-fluid px-2">
+    <!-- Filter Form -->
+    <form method="get">
+        <div class="row position-relative">
+          
+            <!-- Left Column - Filters -->
+            <div class="col-md-4">
+                {% include 'components/ComboBoxCustomer.html'%}
+                
+                <div class="input-group mb-3">
+                    <span class="input-group-text customwidth">Date</span>
+                    <input type="date" name="date" class="form-control" id="dateInput" data-selected-date="{{ selected_date }}" />
+                </div>
+            </div>
+            
+            <!-- Mid Column - Checkboxes -->
+            <div class="col-md-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text customwidth">Dist. Channel</span>
+                    <select name="cmb_DistChannel" id="cmb_DistChannel" class="form-select" data-selected-dist-channel="{{ selected_dist_channel }}">
+                        <option value="ALL">ALL</option>
+                        {% for row in dischan %}
+                        <option value="{{ row.dischan }}">{{ row.detail }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+              
+                <div class="input-group mb-3">
+                    <span class="input-group-text customwidth" >Search</span>
+                    <input type="text" class="form-control placeholderSearch" name="search_term" id="search_term" placeholder=' FILE NAME,FILE DOWNLOAD,PO,SO,NOTES' data-search-term="{{ search_term }}" />
+                </div>
+            </div>
+            
+            <!-- Right Column - Checkboxes -->
+            <div class="col-md-4">
+                <div class="container">
+                    <!-- Top row with 2 columns -->
+                    <div class="row mb-3 checkbox-height">
+                        <div class="col-6 p-3">
+                            <div class="form-check mb-2">
+                                <input type="checkbox" class="form-check-input" name="kolom_download" id="kolom_download" data-checked="{{ kolom_download|yesno:'true,false' }}" {% if kolom_download %}checked{% endif %}>
+                                <label class="form-check-label" for="kolom_download">Kolom Download</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input type="checkbox" class="form-check-input" name="kolom_ocr" id="kolom_ocr" data-checked="{{ kolom_ocr|yesno:'true,false' }}" {% if kolom_ocr %}checked{% endif %}>
+                                <label class="form-check-label" for="kolom_ocr">Kolom OCR</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input type="checkbox" class="form-check-input" name="belum_po" id="belum_po" {% if belum_po %}checked{% endif %}>
+                                <label class="form-check-label" for="belum_po">Belum Jadi PO (XPI)</label>
+                            </div>
+                        </div>
+                        <div class="col-6 p-3">
+                            <div class="form-check mb-2">
+                                <input type="checkbox" class="form-check-input" name="belum_download" id="belum_download" {% if belum_download %}checked{% endif %}>
+                                <label class="form-check-label" for="belum_download">Belum di Download</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input type="checkbox" class="form-check-input" name="belum_ocr" id="belum_ocr" {% if belum_ocr %}checked{% endif %}>
+                                <label class="form-check-label" for="belum_ocr">Belum Masuk OCR</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input type="checkbox" class="form-check-input" name="belum_so" id="belum_so" {% if belum_so %}checked{% endif %}>
+                                <label class="form-check-label" for="belum_so">Belum Jadi SO</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom row with Apply button -->
+                    <div class="row">
+                        <div class="col-12 apply-container">
+                            <button type="submit" class="btn btn-primary float-end apply-btn">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <span class="border-bottom border-3"></span>
+        </div>
+        
+        <!-- Metrics Cards -->
+        <div class="container py-4">
+            <div class="row g-3">
+                <div class="col">
+                    <div class="metric-card">
+                        <div class="metric-value">{{TablePOSOCount.SOURCE}}</div>
+                        <p class="metric-label">Source</p>
+                    </div>
+                </div>
+                <div class="col download-column">
+                    <div class="metric-card">
+                        <div class="metric-value">{{TablePOSOCount.DOWNLOAD}}</div>
+                        <p class="metric-label">Download</p>
+                    </div>
+                </div>
+                <div class="col ocr-column">
+                    <div class="metric-card">
+                        <div class="metric-value">{{TablePOSOCount.OCR}}</div>
+                        <p class="metric-label">OCR</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="metric-card">
+                        <div class="metric-value">{{TablePOSOCount.PO}}</div>
+                        <p class="metric-label">PO</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="metric-card">
+                        <div class="metric-value">{{TablePOSOCount.SO}}</div>
+                        <p class="metric-label">SO</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pagination Controls -->
+        <div class="d-flex align-items-center justify-content-between">
+            <!-- Dropdown Rows Per Page -->
+            <div class="input-group w-auto">
+                <label class="input-group-text" for="cmb_rowsPerPage">Rows</label>
+                <select class="form-select" id="cmb_rowsPerPage" name="cmb_rowsPerPage" data-rows-per-page="{{ rowsPerPage }}">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+            
+            <!-- Pagination -->          
+        </div>
+    </form>
+
+    <!-- Data Table -->
+    <div class="containerTable table-responsive" style="max-height: 565px; overflow-y: auto;"
+        data-kolom-ocr="{{ kolom_ocr|yesno:'true,false' }}" 
+        data-kolom-download="{{ kolom_download|yesno:'true,false' }}">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Customer</th>
+                    <th scope="col">Source</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Filedate</th>
+                    <th scope="col" class="download-column">Download Name</th>
+                    <th scope="col" class="download-column">Download Date</th>
+                    <th scope="col" class="ocr-column">OCR Name</th>
+                    <th scope="col" class="ocr-column">OCR Date</th>
+                    <th scope="col">PO Number</th>
+                    <th scope="col">PO Date</th>
+                    <th scope="col">Dist. Chan.</th>
+                    <th scope="col">SO Number</th>
+                    <th scope="col">SO Date</th>
+                    <th scope="col">Total Price</th>
+                    <th scope="col">SAP Info</th>
+                    <th scope="col">Jadwal Toko</th>
+                    <th scope="col">Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in TablePOSO %}
+                    <tr>
+                        <td>{{ row.ROWNUM|default:"" }}</td>
+                        <td>{{ row.CUSTOMER|default:"" }}</td>
+                        <td>{{ row.FILE_SOURCE|default:"" }}</td>
+                        <td>{{ row.FILENAME_SOURCE|default:"" }}</td>
+                        <td>{{ row.FILENAME_SOURCE_DATE|default:"" }}</td>
+                        <td class="download-column">{{ row.FILENAME_DOWNLOAD|default:"" }}</td>
+                        <td class="download-column">{{ row.FILENAME_DOWNLOAD_DATE|default:"" }}</td>
+                        <td class="ocr-column">{{ row.FILENAME_OCR|default:"" }}</td>
+                        <td class="ocr-column">{{ row.FILENAME_OCR_DATE|default:"" }}</td>
+                        <td>{{ row.PO_XPI|default:"" }}</td>
+                        <td>{{ row.PO_XPI_DATE|default:"" }}</td>
+                        <td>{{ row.DISTRIBUTION_CHANNEL|default:"" }}</td>
+                        <td>{{ row.SO_NUMBER|default:"" }}</td>
+                        <td>{{ row.SO_DATE|default:"" }}</td>
+                        <td>{{ row.TOTAL_PRICE|default:"" }}</td>
+                        <td>{{ row.RETURN_SAP|default:"" }}</td>
+                        <td>{{ row.INFO_JADWALTOKO|default:"" }}</td>
+                        <td>{{ row.NOTES|default:"" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="18" class="no-data">No data available</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}
