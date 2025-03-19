@@ -208,11 +208,11 @@ def FlowPOSO(request):
     belum_po = request.GET.get('belum_po', '') == 'on'
     kolom_download = request.GET.get('kolom_download', '') == 'on'
     kolom_ocr   = request.GET.get('kolom_ocr', '') == 'on'
-    
+    dateLastSevenDays   = request.GET.get('dateLastSevenDays', '') == 'on'
     if rowsPerPage is None or rowsPerPage == '':
         rowsPerPage=10
     if pages is None or pages == '':
-        pages=1
+        pages=2
         
     formatted_date = ''
     if selected_date is None or selected_date == '':
@@ -225,9 +225,9 @@ def FlowPOSO(request):
     datacus=ComboBoxCustomer()
     datadischan=ComboBoxDistChan()
     DataTablePOSO=TablePOSO(search_term,selected_customer,formatted_date,selected_dist_channel,
-                            belum_download,belum_so,belum_ocr,belum_po,rowsPerPage,pages)   
+                            belum_download,belum_so,belum_ocr,belum_po,rowsPerPage,pages,dateLastSevenDays)   
     DataTablePOSOCount=TablePOSOCount(search_term,selected_customer,formatted_date,selected_dist_channel,
-                            belum_download,belum_so,belum_ocr,belum_po)   
+                            belum_download,belum_so,belum_ocr,belum_po,dateLastSevenDays)   
     
     print("======Debugging=====")
     print(f"Search Term: {search_term}")  # Debugging
@@ -243,6 +243,7 @@ def FlowPOSO(request):
     print(f"Kolom Download: {rowsPerPage}")  # Debugging
     print(f"rowPerPages : {rowsPerPage}")  # Debugging
     print(f"Pages : {pages}")  # Debugging
+    print(f"dateLastSevenDays : {dateLastSevenDays}")  # Debugging
     
     return render(request, 'FlowPOSO.html', {
         'data': datacus,
@@ -260,7 +261,8 @@ def FlowPOSO(request):
         'kolom_download': kolom_download,
         'kolom_ocr': kolom_ocr,
         'rowsPerPage': rowsPerPage,
-        'pages': pages
+        'pages': pages,
+        'dateLastSevenDays': dateLastSevenDays
     })
 
     # search_term = request.GET.get('search_term', '')
@@ -284,7 +286,7 @@ def ComboBoxDistChan():
     return [{'dischan': row[0],'detail': row[1]} for row in rows] 
 
 def TablePOSO(vSearch,vCustomer,vSelectedDate,vSelectedDistChannel,
-              vBelumDownload,vBelumSO,vBelumOCR,vBelumPO,vRowsPerPage,vPages):
+              vBelumDownload,vBelumSO,vBelumOCR,vBelumPO,vRowsPerPage,vPages,vDateLastSevenDays):
     with connection.cursor() as cursor:
         
         where_clause = "1=1"
@@ -310,11 +312,12 @@ def TablePOSO(vSearch,vCustomer,vSelectedDate,vSelectedDistChannel,
             
         if vBelumPO :
             where_clause += " AND PO_XPI IS NULL"    
-        
- 
-        
-        where_clause += " AND trunc(DATE_ASOF) = :dateasof"    
-        params['dateasof'] = vSelectedDate
+            
+        if vDateLastSevenDays :
+            where_clause += " AND trunc(DATE_ASOF) >= trunc(sysdate) - 7"    
+        else:    
+            where_clause += " AND trunc(DATE_ASOF) = :dateasof"    
+            params['dateasof'] = vSelectedDate
             
         where_clause +="""
         AND (FILENAME_SOURCE LIKE :search_term OR 
@@ -398,7 +401,7 @@ def TablePOSO(vSearch,vCustomer,vSelectedDate,vSelectedDistChannel,
     
 
 def TablePOSOCount(vSearch,vCustomer,vSelectedDate,vSelectedDistChannel,
-              vBelumDownload,vBelumSO,vBelumOCR,vBelumPO):
+              vBelumDownload,vBelumSO,vBelumOCR,vBelumPO,vDateLastSevenDays):
     with connection.cursor() as cursor:
         
          # Build the WHERE condition dynamically
@@ -426,8 +429,11 @@ def TablePOSOCount(vSearch,vCustomer,vSelectedDate,vSelectedDistChannel,
         if vBelumPO :
             where_clause += " AND PO_XPI IS NULL"    
         
-        where_clause += " AND trunc(DATE_ASOF) = :dateasof"    
-        params['dateasof'] = vSelectedDate
+        if vDateLastSevenDays :
+            where_clause += " AND trunc(DATE_ASOF) >= trunc(sysdate) - 7"    
+        else:    
+            where_clause += " AND trunc(DATE_ASOF) = :dateasof"    
+            params['dateasof'] = vSelectedDate
             
             
         where_clause +="""

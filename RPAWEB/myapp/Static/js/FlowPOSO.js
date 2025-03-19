@@ -55,4 +55,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
     toggleDownloadColumns();
     kolomDownloadCheckbox.addEventListener("change", toggleDownloadColumns);
+
+    //pagination
+    var currentPage = document.getElementById("ActivePage");;
+    currentPage = currentPage.dataset.currentPage || 1;
+    var totalRow= document.getElementById("TotalRow");
+        let totalPages = 1;
+
+        function fetchPagination(page) {
+            fetch(`/paginate_view?page=${page}`)
+                .then(response => response.json())
+                .then(data => {
+                    currentPage = data.page;
+                    totalPages = data.total_pages;
+
+                    document.getElementById("pageInfo").innerText = `Page ${currentPage} of ${totalPages}`;
+
+                    document.getElementById("prevBtn").disabled = !data.prev_page;
+                    document.getElementById("nextBtn").disabled = !data.next_page;
+                })
+                .catch(error => console.error("Error fetching pagination:", error));
+        }
+
+        function changePage(step) {
+            let newPage = currentPage + step;
+            if (newPage >= 1 && newPage <= totalPages) {
+                fetchPagination(newPage);
+            }
+        }
+
+        // Load pagination on page load
+        fetchPagination(currentPage);
 });

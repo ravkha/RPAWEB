@@ -22,6 +22,10 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text customwidth">Date</span>
                     <input type="date" name="date" class="form-control" id="dateInput" data-selected-date="{{ selected_date }}" />
+                    <div class="form-check mb-2">
+                        <input type="checkbox" class="form-check-input" name="dateLastSevenDays" id="dateLastSevenDays" data-checked="{{ dateLastSevenDays|yesno:'true,false' }}" {% if dateLastSevenDays %}checked{% endif %}>
+                        <label class="form-check-label" for="dateLastSevenDays">Last 7 days</label>
+                    </div>
                 </div>
             </div>
             
@@ -95,7 +99,7 @@
             <div class="row g-3">
                 <div class="col">
                     <div class="metric-card">
-                        <div class="metric-value">{{TablePOSOCount.SOURCE}}</div>
+                        <div class="metric-value" id="totalRow">{{TablePOSOCount.SOURCE}}</div>
                         <p class="metric-label">Source</p>
                     </div>
                 </div>
@@ -140,6 +144,11 @@
             </div>
             
             <!-- Pagination -->          
+             <div>
+                <button id="prevBtn" onclick="changePage(-1)" disabled>Previous</button>
+                <input disabled type="text" class="PageText" name="ActivePage" id="ActivePage" data-page="{{ pages }}" />
+                <button id="nextBtn" onclick="changePage(1)">Next</button>  
+             </div>   
         </div>
     </form>
 
